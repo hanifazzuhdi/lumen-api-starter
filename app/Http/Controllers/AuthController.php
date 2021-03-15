@@ -26,10 +26,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        $user->update([
-            'remember_token' => $token
-        ]);
-
         return response()->json(compact('user', 'token'));
     }
 
