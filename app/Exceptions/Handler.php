@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -20,7 +21,6 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         AuthorizationException::class,
         HttpException::class,
-        ModelNotFoundException::class,
     ];
 
     /**
@@ -51,6 +51,8 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof FormValidationException) {
             return $exception->getResponse();
+        } else if ($exception instanceof MethodNotAllowedHttpException) {
+            return response(["error" => "Method url ini tidak tersedia"]);
         }
 
         return parent::render($request, $exception);
