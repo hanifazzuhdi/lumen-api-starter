@@ -65,11 +65,11 @@ $app->configure('auth');
 
 $app->configure('jwt');
 
+// configure for mail
 $app->configure('mail');
 
 $app->alias('mail.manager', Illuminate\Mail\MailManager::class);
 $app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
-
 $app->alias('mailer', Illuminate\Mail\Mailer::class);
 $app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
 $app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
@@ -90,8 +90,9 @@ $app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
 // ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-    'jwt'  => App\Http\Middleware\JwtMiddleware::class
+    'auth'     => App\Http\Middleware\Authenticate::class,
+    'jwt'      => App\Http\Middleware\JwtMiddleware::class,
+    'verified' => App\Http\Middleware\VerifiedMiddleware::class
 ]);
 
 /*
@@ -107,13 +108,13 @@ $app->routeMiddleware([
 
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
+$app->register(App\Providers\EventServiceProvider::class);
 
 // Package
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(Illuminate\Mail\MailServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 $app->register(Anik\Form\FormRequestServiceProvider::class);
-$app->register(Illuminate\Mail\MailServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -128,6 +129,7 @@ $app->register(Illuminate\Mail\MailServiceProvider::class);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
+    'prefix'    => '/api'
 ], function ($router) {
     require __DIR__ . '/../routes/web.php';
 });

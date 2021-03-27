@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Events\Register;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
-use App\Mail\RegisterMail;
-use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -34,14 +34,18 @@ class AuthController extends Controller
     // Register user
     public function register(Request $request, RegisterRequest $validation)
     {
-        $user =  User::create([
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'password'   => Hash::make($request->password),
-        ]);
+        try {
+            $user =  User::create([
+                'name'           => $request->name,
+                'email'          => $request->email,
+                'password'       => Hash::make($request->password),
+            ]);
 
-        Mail::to($user['email'])->send(new RegisterMail);
+            event(new Register($user));
 
-        return $this->sendResponse('success', 'data has been created successfully', $user, 200);
+            return $this->successResponse('data has been created successfully', $user, 200);
+        } catch (\Exception $e) {
+            return $this->failedResponse('data failed to create', 400);
+        }
     }
 }

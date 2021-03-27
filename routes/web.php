@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Str;
-
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -15,16 +13,16 @@ use Illuminate\Support\Str;
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
+// prefix api
 
+$router->get('/email/verify/{user}/{hash}', 'EmailController@confirmation');
+$router->post('/email/verify/resend', 'EmailController@resend');
 
 // Auth User
 $router->post('/user/login', 'AuthController@login');
 $router->post('/user/register', 'AuthController@register');
 
 // User
-$router->group(['middleware' => ['jwt', 'auth'], 'prefix' => 'user'], function () use ($router) {
+$router->group(['middleware' => ['jwt', 'auth', 'verified'], 'prefix' => 'user'], function () use ($router) {
     $router->get('/', 'UserController@show');
 });

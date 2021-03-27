@@ -15,5 +15,10 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\ExampleEvent::class => [
             \App\Listeners\ExampleListener::class,
         ],
+
+        \App\Events\Register::class => [
+            \App\Listeners\RegisterConfirmation::class,
+        ]
+
     ];
 }
